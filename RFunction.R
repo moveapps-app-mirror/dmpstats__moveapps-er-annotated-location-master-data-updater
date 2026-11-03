@@ -2673,10 +2673,13 @@ fill_track_gaps <- function(
     by = "er_subject_name"
   )
 
-  # # get provider UUID from its key
-  # provider_id <- get_provider_id(provider_key, api_base_url, token)
+  # get provider UUID from its key
+  provider_id <- get_provider_id(provider_key, api_base_url, token)
 
-  ## Perform Obs GET request, iteratively over subjects
+  ## Perform Obs GET request, iteratively over subjects. For efficiency
+  ## purposes, add source-provider filter to restrict returns to subject_id +
+  ## provider_id intersections. API returns no observations when there is no
+  ## overlap.
   obs_nonexcl <- purrr::pmap(
     query_subjects,
     function(query_from, query_to, er_subject_id, er_subject_name, ...) {
@@ -2688,8 +2691,8 @@ fill_track_gaps <- function(
         max_date = query_to,
         filter = 0,
         page_size = 1000,
-        subject_id = er_subject_id #,
-        #sourceprovider_id = provider_id
+        subject_id = er_subject_id,
+        sourceprovider_id = provider_id
       )
 
       if (nrow(sbj_obs) == 0) {
