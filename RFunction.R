@@ -2856,7 +2856,10 @@ get_subject_ids <- function(api_base_url, token) {
   req_subj <- httr2::request(subjects_api_endpnt) |>
     httr2::req_auth_bearer_token(token) |>
     # force pagination, to allow for iterative requests below
-    httr2::req_url_query(page_size = 500) |>
+    httr2::req_url_query(
+      page_size = 500,
+      include_inactive = TRUE
+    ) |>
     httr2::req_headers("accept" = "application/json")
 
   res_subj <- req_subj |>
